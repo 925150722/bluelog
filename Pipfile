@@ -19,6 +19,7 @@ flask-mail = "*"
 bootstrap-flask = "*"
 flask-moment = "*"
 flask-debugtoolbar = "*"
+unidecode = "*"
 
 [requires]
 python_version = "3.6"

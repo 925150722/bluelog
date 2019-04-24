@@ -2,6 +2,7 @@
 from datetime import datetime
 from bluelog.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from bluelog.utils import slugify
 
 
 class Admin(db.Model):

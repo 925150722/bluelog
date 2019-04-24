@@ -2,6 +2,7 @@
 import os
 import click
 from flask import Flask, render_template
+from flask_migrate import Migrate
 from bluelog.settings import config
 from bluelog.blueprints.admin import admin_bp
 from bluelog.blueprints.auth import auth_bp
@@ -34,6 +35,8 @@ def register_logging(app):
 def register_extensions(app):
     bootstrap.init_app(app)
     db.init_app(app)
+    migrate = Migrate(db=db)
+    migrate.init_app(app)
     mail.init_app(app)
     ckeditor.init_app(app)
     moment.init_app(app)
