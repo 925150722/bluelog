@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
-{% from 'bootstrap/pagination.html' import pagination %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
 {% block title %}{{ post.title }}{% endblock %}
+
 {% block content %}
     <div class="page-header">
         <h1>{{ post.title }}</h1>
@@ -15,25 +18,24 @@
             {{ post.body|safe }}
             <hr>
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".postLinkModal">
-                share
+                Share
             </button>
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Permalink</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Permalink</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <input type="text" class="form-control" value="{{ url_for('.show_post', post_id=post.id, _external=True) }}">
+                            <input type="text" class="form-control" value="{{ url_for('.show_post', post_id=post.id, _external=True) }}" readonly>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="comments" id="comments">
+             <div class="comments" id="comments">
             <h3>
                {{ comments|length }} Comments
                 <small>
@@ -62,7 +64,7 @@
                                 </h5>
                                 <small data-toggle="tooltip" data-placement="top" data-delag="500"
                                     data-timestamp="{{ comment.timestamp.strftime('%Y-%m-%dT%H:%M%SZ') }}">
-                                    {{ moment.replied.body }}
+                                    {{ moment(comment.timestamp).fromNow() }}
                                 </small>
                             </div>
                             {% if comment.replied %}
@@ -84,7 +86,21 @@
         {% if comments %}
             {{ render_pagination(pagination=pagination, fragment='#comments') }}
         {% endif %}
-        <div class="col-sm-4">
+        {% if request.args.get('reply') %}
+            <div class="alert alert-dark">
+                Reply to <strong>{{ request.args.get('author') }}</strong>
+                <a class="float-right" href="{{ url_for('.show_post', post_id=post.id) }}">Cancel</a>
+            </div>
+        {% endif %}
+{#        {% if post.can_comment %}#}
+            <div id="comment-form">
+                {{ render_form(form, action=request.full_path) }}
+            </div>
+{#        {% else %}#}
+{#            <div class="tip"><h5>Comment disabled.</h5></div>#}
+{#        {% endif %}#}
+        </div>
+        <div class="col-sm-4 sidebar">
             {% include 'blog/_sidebar.html' %}
         </div>
     </div>

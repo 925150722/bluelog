@@ -20,6 +20,7 @@ bootstrap-flask = "*"
 flask-moment = "*"
 flask-debugtoolbar = "*"
 unidecode = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.6"
