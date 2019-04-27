@@ -1,7 +1,9 @@
 
 from flask import Blueprint, current_app, request, render_template, flash, redirect, url_for
+from flask_login import current_user
+
 from bluelog.models import Post, Category, Comment
-from bluelog.forms import PostsForm, CategoryForm
+from bluelog.forms import PostsForm, CategoryForm, SettingForm
 from bluelog.extensions import db
 from bluelog.utils import redirect_back
 
@@ -155,9 +157,22 @@ def approve_comment(comment_id):
     return redirect_back()
 
 
-@admin_bp.route('/setting')
+@admin_bp.route('/setting', methods=['GET', 'POST'])
 def settings():
-    pass
+    form = SettingForm()
+    if form.validate_on_submit():
+        current_user.name = form.name
+        current_user.blog_title = form.blog_title
+        current_user.blog_sub_title = form.blog_sub_title
+        current_user.about = form.about
+        db.session.commit()
+        flash('Setting Updated.', 'success')
+        return redirect(url_for('blog.index'))
+    form.name.data = current_user.name
+    form.blog_title = current_user.blog_title
+    form.blog_sub_title = current_user.blog_sub_title
+    form.about = current_user.about
+    return render_template('admin/setting.html', form=form)
 
 
 

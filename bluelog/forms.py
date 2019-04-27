@@ -45,3 +45,12 @@ class AdminCommentForm(CommentForm):
     author = HiddenField()
     email = HiddenField()
     site = HiddenField()
+
+
+class SettingForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(1, 70)])
+    blog_title = StringField('Blog Title', validators=[DataRequired(), Length(1, 60)])
+    blog_sub_title = StringField('Blog Sub Title', validators=[DataRequired(), Length(1, 100)])
+    about = CKEditorField('About Page', validators=[DataRequired()])
+    submit = SubmitField()
+
