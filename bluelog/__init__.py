@@ -8,8 +8,9 @@ from bluelog.blueprints.admin import admin_bp
 from bluelog.blueprints.auth import auth_bp
 from bluelog.blueprints.blog import blog_bp
 from bluelog.extensions import bootstrap, db, mail, ckeditor, moment, login_manager, csrf
-from bluelog.models import Admin, Category
+from bluelog.models import Admin, Category, Comment
 from flask_wtf.csrf import CSRFError
+from flask_login import current_user
 
 
 def create_app(config_name=None):
@@ -42,13 +43,13 @@ def register_extensions(app):
     ckeditor.init_app(app)
     moment.init_app(app)
     login_manager.init_app(app)
-    csrf.init(app)
+    csrf.init_app(app)
 
 
 def register_blueprints(app):
     app.register_blueprint(blog_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(admin_bp, url_prefix='admin')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
 
 def register_shell_context(app):
@@ -62,7 +63,12 @@ def register_template_context(app):
     def make_template_context():
         admin = Admin.query.first()
         categories = Category.query.order_by(Category.name).all()
-        return dict(admin=admin, categories=categories)
+
+        if current_user.is_authenticated:
+            unread_comments = Comment.query.filter_by(reviewed=False).count()
+        else:
+            unread_comments = None
+        return dict(admin=admin, categories=categories, unread_comments=unread_comments)
 
 
 def register_errors(app):
