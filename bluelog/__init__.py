@@ -76,9 +76,13 @@ def register_errors(app):
     def bad_request(e):
         return render_template('errors/400.html'), 400
 
+    @app.errorhandler(500)
+    def bad_request(e):
+        return render_template('errors/500.html'), 400
+
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
-        return render_template('400.html', description=e.description), 400
+        return render_template('errors/400.html', description=e.description), 400
 
 
 def register_commands(app):
